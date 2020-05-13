@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const { assign } = actions;
 
-const apiKey = 'DEMO_KEY'
+const apiKey = process.env.VUE_APP_NASA_API_KEY || 'DEMO_KEY';
 
 const fetchPicture = (date) =>
   axios(`https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`)

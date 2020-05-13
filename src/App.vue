@@ -1,58 +1,56 @@
 <template>
-  <div id="x-state-example" :data-state="current.value" class="viewport">
-    <md-toolbar :md-elevation="1">
-      <span class="md-title">Search by Date</span>
-    </md-toolbar>
-    <md-content>
-    <Form
-      :state="current.value"
+  <div id="x-state-example" class="viewport">
+    <DateSelect
+      v-if="current.value === 'gallery' || current.value === 'loading' || current.value === 'start'"
+      :apod-service-action="apodServiceAction"
+      :change-date="changeDate"
       :beginDate="beginDate"
       :endDate="endDate"
-      :change-date="changeDate"
-      @handle-submit="handleSubmit"
+      :getDates="getDates"
+      :state="current.value"
     />
-    </md-content>
-    <div v-if="current.value === 'gallery'">
-      <md-toolbar :md-elevation="1">
-        <span class="md-title">Gallery</span>
-      </md-toolbar>
-      <md-content v-if="context.photos">
-        <Gallery
-          :state="current.value"
-          :photos="context.photos"
-          :select-photo="handlePhotoSelect"
-        />
-      </md-content>
-    </div>
-    <div v-if="current.value === 'photo' || current.value === 'hdphoto'">
-      <md-toolbar :md-elevation="1">
-        <span class="md-title">{{context.currentPhoto.title}}</span>
-      </md-toolbar>
-      <md-content>
-        <Photo
-          :state="current.value"
-          :photo="context.currentPhoto"
-          :leave-photo="handleLeavePhoto"
-        />
-      </md-content>
-    </div>
+    <Gallery
+      v-if="current.value === 'gallery'"
+      :photos="context.photos"
+      :apod-service-action="apodServiceAction"
+      :state="current.value"
+    />
+    <PhotoDetails
+      v-if="current.value === 'photo' || current.value === 'hdphoto'"
+      :photo="context.currentPhoto"
+      :apod-service-action="apodServiceAction"
+      :state="current.value"
+    />
     {{ context.errorMessage }}
   </div>
 </template>
 
+<style>
+.md-layout {
+  padding: 0 20px;
+}
+
+.back-button {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+}
+</style>
+
 <script>
 import { interpret } from 'xstate';
 import { apodMachine } from './machine';
-import Form from './components/Form.vue';
-import Gallery from './components/Gallery.vue';
-import Photo from './components/Photo.vue';
+import DateSelect from './views/DateSelect.vue';
+import Gallery from './views/Gallery.vue';
+import PhotoDetails from './views/PhotoDetails.vue';
 
 export default {
   name: 'x-state-example',
   components: {
-    Form,
+    DateSelect,
     Gallery,
-    Photo,
+    PhotoDetails,
   },
   data() {
     const today = new Date();
@@ -82,6 +80,12 @@ export default {
       .start();
   },
   methods: {
+    apodServiceAction: function(key, params) {
+      this.apodService.send(key, params);
+    },
+    changeDate: function(value) {
+      this.date = value;
+    },
     getDates: function() {
       const dates = [];
       const currentDate = new Date(this.beginDate);
@@ -93,19 +97,6 @@ export default {
       }
 
       return dates;
-    },
-    handleLeavePhoto: function() {
-      this.apodService.send('LEAVE_PHOTO');
-    },
-    handlePhotoSelect: function(photo) {
-      console.log('app', photo)
-      this.apodService.send('SELECT_PHOTO', { currentPhoto: photo })
-    },
-    handleSubmit: function() {
-      this.apodService.send('FETCH', { dates: this.getDates() })
-    },
-    changeDate: function(value) {
-      this.date = value;
     },
   }
 }
