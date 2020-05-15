@@ -7,7 +7,7 @@
     <Form
       :beginDate="beginDate"
       :endDate="endDate"
-      :change-date="changeDate"
+      @change-date="changeDate"
       @handle-submit="handleSubmit"
     />
     </md-content>

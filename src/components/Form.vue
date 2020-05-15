@@ -13,8 +13,9 @@
           class="md-icon-button md-raised md-primary"
           type="submit"
           md-icon-button="search"
-          :disabled="state === 'loading'">
-            <md-icon>search</md-icon>
+          :disabled="state === 'loading'"
+        >
+          <md-icon>search</md-icon>
         </md-button>
       </div>
     </div>
@@ -38,8 +39,11 @@ export default {
     }
   },
   watch: {
-    submittedDate: function(date) {
-      this.$emit('change-date', date);
+    submittedBeginDate: function(date) {
+      this.$emit('change-date', 'beginDate', date);
+    },
+    submittedEndDate: function(date) {
+      this.$emit('change-date', 'endDate', date);
     }
   }
 }

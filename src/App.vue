@@ -83,8 +83,8 @@ export default {
     apodServiceAction: function(key, params) {
       this.apodService.send(key, params);
     },
-    changeDate: function(value) {
-      this.date = value;
+    changeDate: function(key, value) {
+      this[key] = value;
     },
     getDates: function() {
       const dates = [];
@@ -92,8 +92,8 @@ export default {
       const stopDate = new Date(this.endDate);
 
       while (currentDate <= stopDate) {
-          dates.push(new Date (currentDate).toISOString().split('T')[0]);
-          currentDate.setDate(currentDate.getDate() + 1);
+        dates.push(new Date (currentDate).toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
       }
 
       return dates;
